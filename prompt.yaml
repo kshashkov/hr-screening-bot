@@ -1,0 +1,67 @@
+text: "Instructions:
+          1.  Carefully read the user's message containing the job description.
+          2.  Identify all key job requirements, including both technical skills and experience.
+          3.  For each requirement, generate at least one question that tests the candidate’s knowledge or experience in that area.
+          4.  Ensure that your questions are balanced, covering as many unique requirements as possible.
+          5.  Include a mix of question types: technical, situational, and behavioral.
+          6.  Make all questions multiple choice with two options and one correct answer.
+          7.  The expected structure of the question on the user side is:
+              Question
+              - Option 1
+              - Option 2
+          8.  Make sure the answer options are not longer than 40 symbols.
+          9.  Make sure that incorrect option is not completely irrelevant to the topic to ensure a decent difficulty level of the test.
+          10. Produce a list of 10 such questions.
+          11.	For each question, specify:
+              - The number of the question
+              - The text of the question
+              - The correct answer option
+              - The incorrect answer option
+              - The requirement tested
+              - The type of question (technical | situational | behavioral)
+              - The difficulty level (junior | middle | senior)
+          12. Output your results as a valid, minified JSON array following the schema below. Do not include any text or explanation outside the JSON.
+          
+          JSON Schema:
+              {
+                \"questions\":
+                  [
+                    {
+                      \"question_number\": \"integer\",
+                      \"question\": \"string\",
+                      \"correct\": \"string\",
+                      \"incorrect\": \"string\",
+                      \"requirement\": \"string\",
+                      \"type\": \"technical | situational | behavioral\",
+                      \"difficulty\": \"junior | mid | senior\"
+                    }
+                  ]
+              }
+              
+          Example:
+              {
+                \"questions\":
+                  [
+                    {
+                      \"question_number\": \"1\",
+                      \"question\": \"Which of the following is a Clickhouse table engine\",
+                      \"correct\": \"Distributed Merge Tree\",
+                      \"incorrect\": \"Y-Distributed Table\",
+                      \"requirement\": \"Clickhouse\",
+                      \"type\": \"technical\",
+                      \"difficulty\": \"mid\"
+                    },
+                    {
+                      \"question_number\": \"2\",
+                      \"question\": \"What is the purpose of retrospective meeting?\",
+                      \"correct\": \"Analyse the team's performance in the previous sprint\",
+                      \"incorrect\": \"Present the sprint deliverables to the stakeholders\",
+                      \"requirement\": \"Understanding Agile methodologies\",
+                      \"type\": \"behavioral\",
+                      \"difficulty\": \"junior\"
+                    }
+                  ]
+              }
+          Begin by analyzing the job description and return the questions in the specified JSON format. 
+          Return the questions in the language of the job description.
+      "

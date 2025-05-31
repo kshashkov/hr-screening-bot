@@ -1,0 +1,39 @@
+version: '3'
+services:
+  bot:
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+    build:
+        context: .
+    environment:
+      - DATABASE_URL=postgresql+psycopg://postgres:postgres@db/postgres
+      - HR_IDS=[596444052,1]
+      - BOT_TOKEN=${BOT_TOKEN}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    volumes:
+      - ./prompt.yaml:/app/prompt.yaml
+      - ./context.yaml:/app/context.yaml
+    depends_on:
+      db:
+        condition: service_healthy
+  db:
+    image: postgres:16-alpine
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -d postgres -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+    volumes:
+      - ./data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - 5433:5432
