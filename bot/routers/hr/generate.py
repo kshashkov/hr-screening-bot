@@ -16,11 +16,26 @@ router.message.filter(HRFilter())
 
 class GenerateQuestions(StatesGroup):
     file = State()
+    questionnaire_name = State()
 
 
 @router.message(Command("generate"))
 async def start(message: Message, state: FSMContext):
+    await state.set_state(GenerateQuestions.questionnaire_name)
+    await message.answer("Please set a name for this questionnaire.")
+
+
+@router.message(GenerateQuestions.questionnaire_name)
+async def record_name_handler(message: Message, state: FSMContext):
     await state.set_state(GenerateQuestions.file)
+    try:
+        q_name = message.text.replace(' ', '_')
+    except:
+        await message.answer("This name cannot be used.")
+        logging.error("Failed to parse a questionnaire name.", exc_info=e)
+        return
+    await state.set_data({"questionnaire_name": q_name})
+    logging.info(f"Creating new questionnaire {q_name}.")
     await message.answer("Please send a job description in PDF.")
 
 
@@ -28,13 +43,14 @@ async def start(message: Message, state: FSMContext):
 async def generate_questions_handler(message: Message, state: FSMContext, bot: Bot, session: Database):
     await bot.send_chat_action(message.chat.id, "upload_document")
     file = await bot.download(message.document.file_id)
+    data = await state.get_data()
+    q_name = data.get("questionnaire_name")
     try:
         result = generate_questions(file)
     except InvalidJSONError as e:
         await message.answer("An error occurred when processing the file. The prompt may be incorrect.")
         logging.error("OpenAI response is not a valid JSON.", exc_info=e)
         return
-
 
     if list(result.keys())[0].lower() != "questions":
         await message.answer("An error occurred when processing the file. The prompt may be incorrect.")
@@ -63,19 +79,16 @@ async def generate_questions_handler(message: Message, state: FSMContext, bot: B
         logging.error("OpenAI response is not formatted properly.", result)
         return
 
+    logging.info(f"Generated questions: {questions} for questionnaire {q_name}")
 
-
-    logging.info(f"Generated questions: {questions}")
-
-
-    q = await session.add_questions(questions, author_id=message.from_user.id)
+    q = await session.add_questions(questions, author_id=message.from_user.id, questionnaire_name=q_name)
 
     share_button = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="Share the questionnaire", url="https://t.me/share/url?url=http://t.me/" + (await
-                                                                                                            bot.get_me(
+        [InlineKeyboardButton(text="Share the questionnaire", url="https://t.me/share/url?url=http://t.me/" +
+                                                                  (await bot.get_me()).username +
+                                                                  "?start=questions_" +
+                                                                  str(q.id))]])
 
-                                                                                                            )).username + "?start=questions_" + str(
-                q.id))]])
-    await message.answer("Your questionnaire has been generated.", reply_markup=share_button)
+    await message.answer(f"Your questionnaire #{q_name} has been generated.", reply_markup=share_button)
 
     await state.clear()

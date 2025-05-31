@@ -60,10 +60,11 @@ async def answer_question(query, state: FSMContext, session: Database):
         await query.message.answer("Thank you for your answers")
         await state.clear()
         creator_id = (await session.get_question(question_id)).q_author
-        await query.bot.send_message(creator_id, f"User {query.from_user.username} has attempted a questionnaire")
         user_answers = await session.get_user_answers(query.from_user.id, data["attempt_id"])
         questioner = await session.get_questioner(data["questioner_id"])
         questions = await session.get_questions(questioner.questions)
+        await query.bot.send_message(creator_id, f"User {query.from_user.username} has attempted "
+                                                 f"questionnaire #{questioner.name}")
         text = ""
         questions = {q.q_id: q for q in questions}
         answers = {}

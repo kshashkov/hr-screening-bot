@@ -25,6 +25,7 @@ class Answer(Base):
     a_text: Mapped[str] = mapped_column(String, nullable=False)
     q_id: Mapped[int] = mapped_column(Integer, ForeignKey("questions.q_id"), nullable=False)
 
+
 class UserAnswer(Base):
     __tablename__ = "user_answers"
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
@@ -33,10 +34,12 @@ class UserAnswer(Base):
     answer_id: Mapped[int] = mapped_column(Integer, ForeignKey("answers.a_id"), nullable=False)
     attempt_id: Mapped[str] = mapped_column(String, nullable=False)
 
-class Questioner(Base):
-    __tablename__ = "questioners"
+
+class Questionnaire(Base):
+    __tablename__ = "questionnaires"
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     questions: Mapped[list[int]] = mapped_column(ARRAY(Integer), nullable=False)
+    name: Mapped[str] = mapped_column(String, nullable=False)
 
 
 

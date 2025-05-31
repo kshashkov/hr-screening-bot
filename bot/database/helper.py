@@ -1,7 +1,7 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from bot.database.models import User, Question, Answer, Questioner, UserAnswer
+from bot.database.models import User, Question, Answer, Questionnaire, UserAnswer
 
 
 class Database:
@@ -21,7 +21,7 @@ class Database:
     async def get_user(self, user_id):
         return await self.session.get(User, user_id)
 
-    async def add_questions(self, questions, author_id):
+    async def add_questions(self, questions, author_id, questionnaire_name):
         try:
             q_ids = []
             for question in questions:
@@ -39,7 +39,7 @@ class Database:
                 await self.session.commit()
                 q_ids.append(q.q_id)
 
-            questioner = Questioner(questions=q_ids)
+            questioner = Questionnaire(questions=q_ids, name=questionnaire_name)
             self.session.add(questioner)
             await self.session.commit()
             return questioner
@@ -49,7 +49,7 @@ class Database:
             raise e
 
     async def get_questioner(self, questioner_id):
-        return await self.session.get(Questioner, questioner_id)
+        return await self.session.get(Questionnaire, questioner_id)
 
     async def get_question(self, question_id):
         return await self.session.get(Question, question_id)
