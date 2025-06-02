@@ -8,6 +8,7 @@
 - aiogram (для работы с Telegram API)
 - sqlalchemy (ORM для работы с базой данных)
 - psycopg3 (драйвер для базы данных PostgreSQL)
+- pypdf (парсинг PDF файлов)
 
 ## Установить зависимости
 - Docker
