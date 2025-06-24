@@ -5,13 +5,13 @@
 - Python 3
 - PostgreSQL 16
 
-## Libraries
+### Libraries
 - aiogram (for working with the Telegram API)
 - sqlalchemy (ORM for working with the database)
 - psycopg3 (PostgreSQL database driver)
 - pypdf (PDF file parsing)
 
-## Install Dependencies
+### Install Dependencies
 - Docker
 - Docker Compose
 
